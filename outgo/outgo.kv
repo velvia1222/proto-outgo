@@ -1,0 +1,129 @@
+#:kivy 1.8.0
+
+#:import Window kivy.core.window.Window
+
+#:set col_number 3
+#:set row_number 7
+
+
+<InputButton@Button>:
+    font_size: 36
+    width: Window.width / col_number
+    height: Window.height / row_number
+
+
+<TargetButton@ToggleButton>:
+    font_size: 36
+    width: Window.width / col_number
+    height: Window.height / row_number
+    group: 'target'
+
+
+<InputWidget>:
+    number_display: number_display
+    category_spinner: category_spinner
+    target_y: target_y
+    target_n: target_n
+
+    TextInput:
+        id: number_display
+        width: Window.width
+        height: Window.height / row_number
+        top: root.top
+        text_size: self.size
+        font_size: 36
+        text: ''
+
+    Spinner:
+        id: category_spinner
+        width: Window.width
+        height: Window.height / row_number
+        top: root.height * 6 / row_number
+        font_size: 36
+        text_autoupdate: True
+
+    TargetButton:
+        id: target_y
+        top: root.height * 5 / row_number
+        text: 'y'
+        state: 'down'
+        on_press: root.select_y()
+
+    TargetButton:
+        id: target_n
+        right: root.width * 2 / col_number
+        top: root.height * 5 / row_number
+        text: 'n'
+        on_press: root.select_n()
+
+    InputButton:
+        id: number_btn_bs
+        text: 'BS'
+        right: root.width
+        top: root.height * 5 / row_number
+        on_press: root.backspace()
+
+    InputButton:
+        text: '1'
+        top: root.height * 2 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '2'
+        right: root.width * 2 / col_number
+        top: root.height * 2 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '3'
+        right: root.width
+        top: root.height * 2 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '4'
+        top: root.height * 3 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '5'
+        right: root.width * 2 / col_number
+        top: root.height * 3 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '6'
+        right: root.width
+        top: root.height * 3 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '7'
+        top: root.height * 4 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '8'
+        right: root.width * 2 / col_number
+        top: root.height * 4 / row_number
+        on_press: root.input_number(self)
+
+    InputButton:
+        text: '9'
+        right: root.width
+        top: root.height * 4 / row_number
+        on_press: root.input_number(self)
+
+    Button:
+        text: 'Enter'
+        width: Window.width / 2
+        height: Window.height / row_number
+        font_size: 36
+        right: root.width
+
+    Button:
+        text: 'Cancel'
+        width: Window.width / 2
+        height: Window.height / row_number
+        font_size: 36
+        right: root.width / 2
