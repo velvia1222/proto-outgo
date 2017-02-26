@@ -4,6 +4,7 @@ from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.core.window import Window
 from kivy.resources import resource_add_path
+from kivy.uix.carousel import Carousel
 from kivy.uix.widget import Widget
 
 resource_add_path('/usr/share/fonts/truetype')
@@ -37,11 +38,20 @@ class InputWidget(Widget):
         self.number_display.text = self.number_display.text[:-1]
 
 
+class ListWidget(Widget):
+    pass
+
+
 class OutgoApp(App):
     def build(self):
-        widget = InputWidget()
-        widget.build_category()
-        return widget
+        outgoWidget = Carousel()
+        outgoWidget.loop = True
+        inputWidget = InputWidget()
+        inputWidget.build_category()
+        listWidget = ListWidget()
+        outgoWidget.add_widget(inputWidget)
+        outgoWidget.add_widget(listWidget)
+        return outgoWidget
 
 
 if __name__ == '__main__':
