@@ -1,23 +1,25 @@
 #:kivy 1.8.0
 
 #:import Window kivy.core.window.Window
+#:import main main
 
 #:set col_number 3
 #:set row_number 7
 
+<OutgoRoot>:
+    carousel: carousel
+    input_widget: input_widget
+    list_widget: list_widget
 
-<InputButton@Button>:
-    font_size: 36
-    width: Window.width / col_number
-    height: Window.height / row_number
-
-
-<TargetButton@ToggleButton>:
-    font_size: 36
-    width: Window.width / col_number
-    height: Window.height / row_number
-    group: 'target'
-
+    Carousel:
+        id: carousel
+        width: Window.width
+        height: Window.height
+        loop: True
+        InputWidget:
+            id: input_widget
+        ListWidget:
+            id: list_widget
 
 <InputWidget>:
     number_display: number_display
@@ -41,6 +43,7 @@
         top: root.height * 6 / row_number
         font_size: 36
         text_autoupdate: True
+        values: root.build_category()
 
     TargetButton:
         id: target_y
@@ -120,6 +123,7 @@
         height: Window.height / row_number
         font_size: 36
         right: root.width
+        on_press: root.enter(app.root)
 
     Button:
         text: 'Cancel'
@@ -127,13 +131,60 @@
         height: Window.height / row_number
         font_size: 36
         right: root.width / 2
-
+        on_press: root.cancel(app.root)
 
 <ListWidget>:
-    TextInput:
-        width: Window.width
-        height: Window.height / row_number
-        top: root.top
-        text_size: self.size
-        font_size: 36
-        text: 'List!'
+    ListLabelWidget:
+    ListEditBtnWidget:
+    ListDelBtnWidget:
+
+<ListLabelWidget>:
+    ListView:
+        width: Window.width * 2 / col_number
+        height: Window.height
+        adapter: root.build_adapter()
+
+<ListItemLabelWidget>:
+    width: Window.width * 2 / col_number
+    height: Window.height / row_number
+    text: root.print_item()
+    font_size: 18
+
+<ListEditBtnWidget>:
+    ListView:
+        width: Window.width / col_number / 2
+        height: Window.height
+        right: Window.width * 5 / col_number / 2
+        adapter: root.build_adapter()
+
+<ListItemEditBtnWidget>:
+    width: Window.width / col_number / 2
+    height: Window.height / row_number
+    text: 'Edit'
+    font_size: 18
+    on_press: main.move_to_input(app.root)
+
+<ListDelBtnWidget>:
+    ListView:
+        width: Window.width / col_number / 2
+        height: Window.height
+        right: Window.width
+        adapter: root.build_adapter()
+
+<ListItemDelBtnWidget>:
+    width: Window.width / col_number / 2
+    height: Window.height / row_number
+    text: 'Del'
+    font_size: 18
+    on_press: main.move_to_input(app.root)
+
+<InputButton@Button>:
+    font_size: 36
+    width: Window.width / col_number
+    height: Window.height / row_number
+
+<TargetButton@ToggleButton>:
+    font_size: 36
+    width: Window.width / col_number
+    height: Window.height / row_number
+    group: 'target'
