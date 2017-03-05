@@ -135,45 +135,29 @@
 
 <ListWidget>:
     ListLabelWidget:
-    ListEditBtnWidget:
-    ListDelBtnWidget:
 
 <ListLabelWidget>:
     ListView:
-        width: Window.width * 2 / col_number
+        width: Window.width
         height: Window.height
         adapter: root.build_adapter()
 
-<ListItemLabelWidget>:
-    width: Window.width * 2 / col_number
+<ListItemWidget>:
+    width: Window.width
     height: Window.height / row_number
+
+<ListItemLabelWidget>:
     text: root.print_item()
     font_size: 18
 
-<ListEditBtnWidget>:
-    ListView:
-        width: Window.width / col_number / 2
-        height: Window.height
-        right: Window.width * 5 / col_number / 2
-        adapter: root.build_adapter()
-
 <ListItemEditBtnWidget>:
     width: Window.width / col_number / 2
-    height: Window.height / row_number
     text: 'Edit'
     font_size: 18
     on_press: main.move_to_input(app.root)
 
-<ListDelBtnWidget>:
-    ListView:
-        width: Window.width / col_number / 2
-        height: Window.height
-        right: Window.width
-        adapter: root.build_adapter()
-
 <ListItemDelBtnWidget>:
     width: Window.width / col_number / 2
-    height: Window.height / row_number
     text: 'Del'
     font_size: 18
     on_press: main.move_to_input(app.root)

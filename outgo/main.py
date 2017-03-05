@@ -7,12 +7,14 @@ from kivy.core.window import Window
 from kivy.properties import ListProperty
 from kivy.resources import resource_add_path
 from kivy.uix.carousel import Carousel
-from kivy.uix.listview import ListItemButton
+from kivy.uix.listview import CompositeListItem, ListItemButton
 from kivy.uix.widget import Widget
 
 resource_add_path('/usr/share/fonts/truetype')
 LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
 Window.size = (300, 450)
+
+testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費')]
 
 
 class OutgoRoot(Widget):
@@ -57,10 +59,22 @@ class ListWidget(Widget):
 class ListLabelWidget(Widget):
     def build_adapter(self):
         return ListAdapter(
-                data=[('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費')],
-                args_converter=lambda index, data: {'items': data},
-                cls=ListItemLabelWidget,
+                data=testdata,
+                args_converter=lambda index, data: \
+                        {'cls_dicts': [
+                                {'cls': ListItemLabelWidget,
+                                    'kwargs': {'text': '', 'items': data}},
+                                {'cls': ListItemEditBtnWidget,
+                                    'kwargs': {'text': ''}},
+                                {'cls': ListItemDelBtnWidget,
+                                    'kwargs': {'text': ''}}],
+                            'height': Window.height / 6},
+                cls=ListItemWidget,
                 selection_mode='multiple')
+
+
+class ListItemWidget(CompositeListItem):
+    pass
 
 
 class ListItemLabelWidget(ListItemButton):
@@ -70,26 +84,8 @@ class ListItemLabelWidget(ListItemButton):
         return self.items[0] + ' ' + str(self.items[1]) + ' ' + self.items[2]
 
 
-class ListEditBtnWidget(Widget):
-    def build_adapter(self):
-        return ListAdapter(
-                data=[('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費')],
-                args_converter=lambda index, data: {},
-                cls=ListItemEditBtnWidget,
-                selection_mode='none')
-
-
 class ListItemEditBtnWidget(ListItemButton):
     pass
-
-
-class ListDelBtnWidget(Widget):
-    def build_adapter(self):
-        return ListAdapter(
-                data=[('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費')],
-                args_converter=lambda index, data: {},
-                cls=ListItemDelBtnWidget,
-                selection_mode='none')
 
 
 class ListItemDelBtnWidget(ListItemButton):
