@@ -134,33 +134,29 @@
         on_press: root.cancel(app.root)
 
 <ListWidget>:
-    ListLabelWidget:
-
-<ListLabelWidget>:
     ListView:
         width: Window.width
         height: Window.height
-        adapter: root.build_adapter()
+        adapter: main.build_adapter()
 
-<ListItemWidget>:
-    width: Window.width
-    height: Window.height / row_number
-
-<ListItemLabelWidget>:
-    text: root.print_item()
-    font_size: 18
-
-<ListItemEditBtnWidget>:
-    width: Window.width / col_number / 2
-    text: 'Edit'
-    font_size: 18
-    on_press: main.move_to_input(app.root)
-
-<ListItemDelBtnWidget>:
-    width: Window.width / col_number / 2
-    text: 'Del'
-    font_size: 18
-    on_press: main.move_to_input(app.root)
+[ListItemWidget@SelectableView+BoxLayout]:
+    size_hint_y: None
+    height: Window.height / row_number / 1.5
+    ListItemLabelWidget:
+        text: self.print_item(ctx.data)
+        font_size: 18
+    ListItemBtnWidget:
+        text: 'Edit'
+        selected_color: [0., 1., 0., 1]
+        size_hint_x: 0.25
+        font_size: 18
+        on_press: self.move_to_input(app.root)
+    ListItemBtnWidget:
+        text: 'Del'
+        selected_color: [0., 1., 0., 1]
+        size_hint_x: 0.25
+        font_size: 18
+        on_press: self.move_to_input(app.root)
 
 <InputButton@Button>:
     font_size: 36

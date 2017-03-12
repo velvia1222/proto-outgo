@@ -14,7 +14,7 @@ resource_add_path('/usr/share/fonts/truetype')
 LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
 Window.size = (300, 450)
 
-testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費')]
+testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費')]
 
 
 class OutgoRoot(Widget):
@@ -56,44 +56,23 @@ class ListWidget(Widget):
     pass
 
 
-class ListLabelWidget(Widget):
-    def build_adapter(self):
-        return ListAdapter(
-                data=testdata,
-                args_converter=lambda index, data: \
-                        {'cls_dicts': [
-                                {'cls': ListItemLabelWidget,
-                                    'kwargs': {'text': '', 'items': data}},
-                                {'cls': ListItemEditBtnWidget,
-                                    'kwargs': {'text': ''}},
-                                {'cls': ListItemDelBtnWidget,
-                                    'kwargs': {'text': ''}}],
-                            'height': Window.height / 6},
-                cls=ListItemWidget,
-                selection_mode='multiple')
-
-
-class ListItemWidget(CompositeListItem):
-    pass
-
-
 class ListItemLabelWidget(ListItemButton):
-    items = ListProperty()
-
-    def print_item(self):
-        return self.items[0] + ' ' + str(self.items[1]) + ' ' + self.items[2]
+    def print_item(self, items):
+        return items[0] + ' ' + str(items[1]) + ' ' + items[2]
 
 
-class ListItemEditBtnWidget(ListItemButton):
-    pass
+class ListItemBtnWidget(ListItemButton):
+    def move_to_input(self, outgoRoot):
+        outgoRoot.carousel.load_slide(outgoRoot.input_widget)
 
 
-class ListItemDelBtnWidget(ListItemButton):
-    pass
-
-
-def move_to_input(outgoRoot):
-    outgoRoot.carousel.load_slide(outgoRoot.input_widget)
+def build_adapter():
+    return ListAdapter(
+            data=testdata,
+            args_converter=lambda index, data: \
+                    {'data': data},
+            template='ListItemWidget',
+            selection_mode='multiple')
 
 
 class OutgoApp(App):
