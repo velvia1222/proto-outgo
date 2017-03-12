@@ -14,7 +14,7 @@ resource_add_path('/usr/share/fonts/truetype')
 LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
 Window.size = (300, 450)
 
-testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費')]
+testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '最後！')]
 
 
 class OutgoRoot(Widget):
@@ -53,12 +53,29 @@ class InputWidget(Widget):
 
 
 class ListWidget(Widget):
-    pass
+    def select_all(self):
+        adapter = self.list_view.adapter
+        views_len = len(adapter.data)
+        all_selected = True
+
+        index = 0
+        while index < views_len:
+            label = adapter.get_view(index).list_item_label
+            if not label.is_selected:
+                all_selected = False
+                label.trigger_action()
+            index += 1
+
+        if all_selected:
+            index = 0
+            while index < views_len:
+                adapter.get_view(index).list_item_label.trigger_action()
+                index += 1
 
 
 class ListItemLabelWidget(ListItemButton):
     def print_item(self, items):
-        return items[0] + ' ' + str(items[1]) + ' ' + items[2]
+        return ' ' + items[0] + ' ' + str(items[1]) + ' ' + items[2]
 
 
 class ListItemBtnWidget(ListItemButton):

@@ -134,16 +134,31 @@
         on_press: root.cancel(app.root)
 
 <ListWidget>:
+    list_view: list_view
+    Button:
+        text: 'Select all'
+        font_size: 24
+        width: Window.width / 2
+        height: Window.height / row_number
+        top: root.top
+        right: Window.width / 2
+        on_press: root.select_all()
     ListView:
+        id: list_view
         width: Window.width
-        height: Window.height
+        height: Window.height * 6 / row_number
+        top: root.height * 6 / row_number
         adapter: main.build_adapter()
 
 [ListItemWidget@SelectableView+BoxLayout]:
+    list_item_label: list_item_label
     size_hint_y: None
     height: Window.height / row_number / 1.5
     ListItemLabelWidget:
+        id: list_item_label
         text: self.print_item(ctx.data)
+        text_size: self.size
+        valign: 'middle'
         font_size: 18
     ListItemBtnWidget:
         text: 'Edit'
