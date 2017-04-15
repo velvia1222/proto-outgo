@@ -143,6 +143,14 @@
         top: root.top
         right: Window.width / 2
         on_press: root.select_all()
+    Button:
+        text: 'Pay off'
+        font_size: 24
+        width: Window.width / 2
+        height: Window.height / row_number
+        top: root.top
+        right: Window.width
+        on_press: root.pay_off()
     ListView:
         id: list_view
         width: Window.width
@@ -172,6 +180,20 @@
         size_hint_x: 0.25
         font_size: 18
         on_press: self.move_to_input(app.root)
+
+<ConfirmContent>:
+    ConfirmLabel:
+        top: root.height
+        right: root.right / 2 - 10
+
+<PopupButton@Button>:
+    top: root.height / row_number + 55
+    font_size: 24
+    width: 140
+    height: Window.height / row_number - 10
+
+<ConfirmLabel@Label>:
+    text: root.get_text()
 
 <InputButton@Button>:
     font_size: 36

@@ -4,10 +4,14 @@ from kivy.adapters.listadapter import ListAdapter
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.core.window import Window
+from kivy.factory import Factory
 from kivy.properties import ListProperty
 from kivy.resources import resource_add_path
+from kivy.uix.button import Button
 from kivy.uix.carousel import Carousel
+from kivy.uix.label import Label
 from kivy.uix.listview import CompositeListItem, ListItemButton
+from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 
 resource_add_path('/usr/share/fonts/truetype')
@@ -15,6 +19,11 @@ LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
 Window.size = (300, 450)
 
 testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '最後！')]
+
+testconfirmdata = '''
+y 3000 外食費
+y 2000 食費
+'''
 
 
 class OutgoRoot(Widget):
@@ -71,6 +80,44 @@ class ListWidget(Widget):
             while index < views_len:
                 adapter.get_view(index).list_item_label.trigger_action()
                 index += 1
+
+    def pay_off(self):
+        content = ConfirmContent(
+                height=Window.height - 50,
+                width=Window.width - 50)
+        popup = ConfirmPopup(content=content)
+        done_button = PopupButton(
+                text='Done',
+                right=249,
+                on_press=popup.dismiss)
+        cancel_button = PopupButton(
+                text='Cancel',
+                right=109,
+                on_press=popup.dismiss)
+        content.add_widget(done_button)
+        content.add_widget(cancel_button)
+        popup.open()
+
+
+class ConfirmPopup(Popup):
+    pass
+
+
+class PopupButton(Button):
+    pass
+
+
+class ConfirmContent(Widget):
+    def pay(self, root):
+        root.dismiss()
+
+    def cancel(self, outgoRoot):
+        outgoRoot.carousel.load_slide(outgoRoot.list_widget)
+
+
+class ConfirmLabel(Label):
+    def get_text(self):
+        return testconfirmdata
 
 
 class ListItemLabelWidget(ListItemButton):
