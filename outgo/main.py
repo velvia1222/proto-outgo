@@ -5,15 +5,17 @@ from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.core.window import Window
 from kivy.factory import Factory
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, ObjectProperty
 from kivy.resources import resource_add_path
 from kivy.uix.button import Button
 from kivy.uix.carousel import Carousel
 from kivy.uix.label import Label
-from kivy.uix.listview import CompositeListItem, ListItemButton
+from kivy.uix.listview import CompositeListItem, ListItemButton, ListView
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
+import sqlite3
 
+SQLITE_FILE = 'outgo_db.sqlite'
 resource_add_path('/usr/share/fonts/truetype')
 LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
 Window.size = (300, 450)
@@ -26,11 +28,41 @@ y 2000 食費
 '''
 
 
+class OutgoModel():
+    def fetch(self):
+        con = sqlite3.connect(SQLITE_FILE)
+        try:
+            curs = con.cursor()
+            curs.execute('''select * from outgo order by number;''')
+            return curs.fetchall()
+        finally:
+            con.close()
+
+    def save(self, status, buyer, amount, category):
+        con = sqlite3.connect(SQLITE_FILE)
+        try:
+            curs = con.cursor()
+            curs.execute('''
+                    insert into outgo
+                        (status, buyer, amount, category) values
+                        (?, ?, ?, ?)''',
+                    (status, buyer, 0 if not amount else amount, category))
+            con.commit()
+        finally:
+            con.close()
+
+
 class OutgoRoot(Widget):
     pass
 
 
+class CarouselWidget(Carousel):
+    pass
+
+
 class InputWidget(Widget):
+    model = ObjectProperty()
+
     def build_category(self):
         category_list = self.get_category_list()
         if len(category_list) > 0:
@@ -54,16 +86,25 @@ class InputWidget(Widget):
     def backspace(self):
         self.number_display.text = self.number_display.text[:-1]
 
-    def enter(self, outgoRoot):
-        outgoRoot.carousel.load_slide(outgoRoot.list_widget)
+    def enter(self, carousel_widget, list_widget):
+        self.model.save(
+                '0',
+                'n' if self.target_n.state == 'down' else 'y',
+                self.number_display.text,
+                self.category_spinner.text)
+        list_widget.update_outgo_data()
+        carousel_widget.load_slide(list_widget)
 
     def cancel(self, outgoRoot):
         outgoRoot.carousel.load_slide(outgoRoot.list_widget)
 
 
 class ListWidget(Widget):
+    def update_outgo_data(self):
+        self.listview_widget.update_adapter()
+
     def select_all(self):
-        adapter = self.list_view.adapter
+        adapter = self.listview_widget.adapter
         views_len = len(adapter.data)
         all_selected = True
 
@@ -99,6 +140,21 @@ class ListWidget(Widget):
         popup.open()
 
 
+class ListViewWidget(ListView):
+    model = ObjectProperty()
+
+    def update_adapter(self):
+        self.adapter = self.build_adapter()
+
+    def build_adapter(self):
+        return ListAdapter(
+                data=self.model.fetch(),
+                args_converter=lambda index, data: \
+                        {'data': data},
+                template='ListItemWidget',
+                selection_mode='multiple')
+
+
 class ConfirmPopup(Popup):
     pass
 
@@ -108,11 +164,7 @@ class PopupButton(Button):
 
 
 class ConfirmContent(Widget):
-    def pay(self, root):
-        root.dismiss()
-
-    def cancel(self, outgoRoot):
-        outgoRoot.carousel.load_slide(outgoRoot.list_widget)
+    pass
 
 
 class ConfirmLabel(Label):
@@ -122,7 +174,7 @@ class ConfirmLabel(Label):
 
 class ListItemLabelWidget(ListItemButton):
     def print_item(self, items):
-        return ' ' + items[0] + ' ' + str(items[1]) + ' ' + items[2]
+        return ' ' + items[2] + ' ' + str(items[3]) + ' ' + items[4]
 
 
 class ListItemBtnWidget(ListItemButton):
@@ -130,16 +182,11 @@ class ListItemBtnWidget(ListItemButton):
         outgoRoot.carousel.load_slide(outgoRoot.input_widget)
 
 
-def build_adapter():
-    return ListAdapter(
-            data=testdata,
-            args_converter=lambda index, data: \
-                    {'data': data},
-            template='ListItemWidget',
-            selection_mode='multiple')
-
-
 class OutgoApp(App):
+    def __init__(self):
+        super().__init__()
+        self.outgo_model = OutgoModel()
+
     def build(self):
         return OutgoRoot()
 
