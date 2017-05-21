@@ -183,12 +183,9 @@ class ListItemBtnWidget(ListItemButton):
 
 
 class OutgoApp(App):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.outgo_model = OutgoModel()
-
-    def build(self):
-        return OutgoRoot()
 
 
 if __name__ == '__main__':
