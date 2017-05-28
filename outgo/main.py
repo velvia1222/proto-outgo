@@ -7,6 +7,7 @@ from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.properties import ListProperty, ObjectProperty
 from kivy.resources import resource_add_path
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.carousel import Carousel
 from kivy.uix.label import Label
@@ -60,7 +61,7 @@ class CarouselWidget(Carousel):
     pass
 
 
-class InputWidget(Widget):
+class InputWidget(BoxLayout):
     model = ObjectProperty()
 
     def build_category(self):
