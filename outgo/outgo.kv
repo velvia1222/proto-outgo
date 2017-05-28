@@ -35,7 +35,6 @@ OutgoRoot
         id: number_display
         width: Window.width
         height: Window.height / row_number
-        top: root.top
         text_size: self.size
         font_size: 36
         text: ''
@@ -47,7 +46,6 @@ OutgoRoot
         TargetButton:
             id: target_y
             size_hint_x: 1 / 3
-            height: Window.height / row_number
             text: 'y'
             state: 'down'
             on_press: root.select_y()
@@ -55,24 +53,23 @@ OutgoRoot
         Spinner:
             id: category_spinner
             size_hint_x: 2 / 3
-            height: Window.height / row_number
-            top: root.height * 6 / row_number
             font_size: 36
             text_autoupdate: True
             values: root.build_category()
 
-    TargetButton:
-        id: target_n
-        top: root.height * 5 / row_number
-        text: 'n'
-        on_press: root.select_n()
+    BoxLayout:
+        orientation: "horizontal"
+        height: Window.height / row_number
 
-    InputButton:
-        id: number_btn_bs
-        text: 'BS'
-        right: root.width
-        top: root.height * 5 / row_number
-        on_press: root.backspace()
+        TargetButton:
+            id: target_n
+            text: 'n'
+            on_press: root.select_n()
+
+        InputButton:
+            id: number_btn_bs
+            text: 'BS'
+            on_press: root.backspace()
 
     GridLayout:
         cols: 3
