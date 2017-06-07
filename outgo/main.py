@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from kivy.adapters.listadapter import ListAdapter
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
