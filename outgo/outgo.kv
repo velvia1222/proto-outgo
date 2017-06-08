@@ -33,15 +33,14 @@ OutgoRoot
 
     TextInput:
         id: number_display
-        width: Window.width
-        height: Window.height / row_number
+        size_hint_y: 1 / row_number
         text_size: self.size
         font_size: 36
         text: ''
 
     BoxLayout:
         orientation: "horizontal"
-        height: Window.height / row_number
+        size_hint_y: 1 / row_number
 
         TargetButton:
             id: target_y
@@ -59,12 +58,16 @@ OutgoRoot
 
     BoxLayout:
         orientation: "horizontal"
-        height: Window.height / row_number
+        size_hint_y: 1 / row_number
 
         TargetButton:
             id: target_n
             text: 'n'
             on_press: root.select_n()
+
+        InputButton:
+            text: '0'
+            on_press: root.input_number(self)
 
         InputButton:
             id: number_btn_bs
@@ -74,6 +77,7 @@ OutgoRoot
     GridLayout:
         cols: 3
         rows: 4
+        size_hint_y: 3 / row_number
 
         InputButton:
             text: '1'
@@ -111,27 +115,19 @@ OutgoRoot
             text: '9'
             on_press: root.input_number(self)
 
-    InputButton:
-        text: '0'
-        right: root.width * 2 / col_number
-        top: root.height * 5 / row_number
-        on_press: root.input_number(self)
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: 1 / row_number
 
-    Button:
-        text: 'Enter'
-        width: Window.width / 2
-        height: Window.height / row_number
-        font_size: 36
-        right: root.width
-        on_press: root.enter(app.root.carousel, app.root.list_widget)
+        Button:
+            text: 'Enter'
+            font_size: 36
+            on_press: root.enter(app.root.carousel, app.root.list_widget)
 
-    Button:
-        text: 'Cancel'
-        width: Window.width / 2
-        height: Window.height / row_number
-        font_size: 36
-        right: root.width / 2
-        on_press: root.cancel(app.root)
+        Button:
+            text: 'Cancel'
+            font_size: 36
+            on_press: root.cancel(app.root)
 
 <ListWidget>:
     listview_widget: listview_widget
@@ -196,16 +192,9 @@ OutgoRoot
 <ConfirmLabel@Label>:
     text: root.get_text()
 
-<NumberButton@Button>:
-    font_size: 36
-
 <InputButton@Button>:
     font_size: 36
-    width: Window.width / col_number
-    height: Window.height / row_number
 
 <TargetButton@ToggleButton>:
     font_size: 36
-    width: Window.width / col_number
-    height: Window.height / row_number
     group: 'target'
