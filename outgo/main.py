@@ -98,7 +98,7 @@ class InputWidget(BoxLayout):
         outgoRoot.carousel.load_slide(outgoRoot.list_widget)
 
 
-class ListWidget(Widget):
+class ListWidget(BoxLayout):
     def update_outgo_data(self):
         self.listview_widget.update_adapter()
 
