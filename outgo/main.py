@@ -123,18 +123,18 @@ class ListWidget(BoxLayout):
 
     def pay_off(self):
         content = ConfirmContent(
-                height=Window.height - 50,
-                width=Window.width - 50)
+                size_hint_x=0.95,
+                size_hint_y=0.95)
         popup = ConfirmPopup(content=content)
-        done_button = PopupButton(
-                text='Done',
-                right=249,
+        do_button = PopupButton(
+                text='Do',
+                right=Window.width - 51,
                 on_press=popup.dismiss)
         cancel_button = PopupButton(
                 text='Cancel',
-                right=109,
+                right=Window.width / 2 - 41,
                 on_press=popup.dismiss)
-        content.add_widget(done_button)
+        content.add_widget(do_button)
         content.add_widget(cancel_button)
         popup.open()
 

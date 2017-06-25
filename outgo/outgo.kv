@@ -4,6 +4,8 @@
 
 #:set col_number 3
 #:set row_number 7
+#:set btn_font_size 36
+#:set list_font_size 18
 
 OutgoRoot
 
@@ -35,7 +37,7 @@ OutgoRoot
         id: number_display
         size_hint_y: 1 / row_number
         text_size: self.size
-        font_size: 36
+        font_size: btn_font_size
         text: ''
 
     BoxLayout:
@@ -52,7 +54,7 @@ OutgoRoot
         Spinner:
             id: category_spinner
             size_hint_x: 2 / 3
-            font_size: 36
+            font_size: btn_font_size
             text_autoupdate: True
             values: root.build_category()
 
@@ -111,12 +113,12 @@ OutgoRoot
 
         Button:
             text: 'Enter'
-            font_size: 36
+            font_size: btn_font_size
             on_press: root.enter(app.root.carousel, app.root.list_widget)
 
         Button:
             text: 'Cancel'
-            font_size: 36
+            font_size: btn_font_size
             on_press: root.cancel(app.root)
 
 <ListWidget>:
@@ -152,26 +154,26 @@ OutgoRoot
         text: self.print_item(ctx.data)
         text_size: self.size
         valign: 'middle'
-        font_size: 18
+        font_size: list_font_size
 
     ListItemBtnWidget:
         text: 'Edit'
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25
-        font_size: 18
+        font_size: list_font_size
         on_press: self.move_to_input(app.root)
 
     ListItemBtnWidget:
         text: 'Del'
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25
-        font_size: 18
+        font_size: list_font_size
         on_press: self.move_to_input(app.root)
 
 <ConfirmContent>:
     ConfirmLabel:
         top: root.height
-        right: root.right / 2 - 10
+        right: root.right * 0.4
 
 <PopupButton@Button>:
     top: root.height / row_number + 55
@@ -183,11 +185,11 @@ OutgoRoot
     text: root.get_text()
 
 <InputButton@Button>:
-    font_size: 36
+    font_size: btn_font_size
 
 <NumberButton@InputButton>:
     on_press: app.root.input_widget.input_number(self)
 
 <TargetButton@ToggleButton>:
-    font_size: 36
+    font_size: btn_font_size
     group: 'target'
