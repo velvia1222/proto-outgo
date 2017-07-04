@@ -56,7 +56,7 @@ OutgoRoot
             size_hint_x: 2 / 3
             font_size: btn_font_size
             text_autoupdate: True
-            values: root.build_category()
+            values: root.get_category()
 
     BoxLayout:
         orientation: "horizontal"
@@ -182,7 +182,7 @@ OutgoRoot
     height: Window.height / row_number - 10
 
 <ConfirmLabel@Label>:
-    text: root.get_text()
+    text: root.get_text(app.root.list_widget.listview_widget)
 
 <InputButton@Button>:
     font_size: btn_font_size

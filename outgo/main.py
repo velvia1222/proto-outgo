@@ -14,17 +14,13 @@ from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 import sqlite3
 
+# const
 SQLITE_FILE = 'outgo_db.sqlite'
+CATEGORY_LIST = ['外食費', '食費', '日用品', '娯楽', '光熱費', '家賃']
+
 resource_add_path('/usr/share/fonts/truetype')
 LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
 Window.size = (300, 450)
-
-testdata = [('y', 3000, '外食費'), ('y', 2000, '娯楽'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '食費'), ('y', 1000, '最後！')]
-
-testconfirmdata = '''
-y 3000 外食費
-y 2000 食費
-'''
 
 
 class OutgoModel():
@@ -62,14 +58,10 @@ class CarouselWidget(Carousel):
 class InputWidget(BoxLayout):
     model = ObjectProperty()
 
-    def build_category(self):
-        category_list = self.get_category_list()
-        if len(category_list) > 0:
-            self.category_spinner.text = category_list[0]
-        return category_list
-
-    def get_category_list(self):
-        return ['外食費', '食費', '日用品', '娯楽', '光熱費', '家賃']
+    def get_category(self):
+        if len(CATEGORY_LIST) > 0:
+            self.category_spinner.text = CATEGORY_LIST[0]
+        return CATEGORY_LIST
 
     def select_y(self):
         if self.target_y.state == 'normal':
@@ -167,8 +159,19 @@ class ConfirmContent(Widget):
 
 
 class ConfirmLabel(Label):
-    def get_text(self):
-        return testconfirmdata
+    def get_text(self, listview_widget):
+        adapter = listview_widget.adapter
+        views_len = len(adapter.data)
+        selected_labels = []
+
+        index = 0
+        while index < views_len:
+            label = adapter.get_view(index).list_item_label
+            if label.is_selected:
+                selected_labels.append(label.text)
+            index += 1
+
+        return "\n".join(selected_labels)
 
 
 class ListItemLabelWidget(ListItemButton):
