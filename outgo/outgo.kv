@@ -31,6 +31,7 @@ OutgoRoot
     category_spinner: category_spinner
     target_y: target_y
     target_n: target_n
+    enter_button: enter_button
 
     TextInput:
         id: number_display
@@ -111,6 +112,7 @@ OutgoRoot
         size_hint_y: 1 / row_number
 
         Button:
+            id: enter_button
             text: 'Enter'
             font_size: btn_font_size
             on_press: root.enter(app.root.carousel, app.root.list_widget)
@@ -118,7 +120,7 @@ OutgoRoot
         Button:
             text: 'Cancel'
             font_size: btn_font_size
-            on_press: root.cancel(app.root)
+            on_press: root.cancel(app.root.carousel, app.root.list_widget)
 
 <ListWidget>:
     listview_widget: listview_widget
@@ -149,21 +151,21 @@ OutgoRoot
 
     ListItemLabelWidget:
         id: list_item_label
-        text: self.print_item(ctx.data)
+        text: self.print_item(ctx.outgo)
         text_size: self.size
         valign: 'middle'
         font_size: list_font_size
 
     ListItemBtnWidget:
-        data: ctx.data
+        outgo: ctx.outgo
         text: 'Edit'
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25
         font_size: list_font_size
-        on_press: self.edit(app.root)
+        on_press: self.edit(app.root.carousel, app.root.input_widget)
 
     ListItemBtnWidget:
-        data: ctx.data
+        outgo: ctx.outgo
         text: 'Del'
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25

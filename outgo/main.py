@@ -31,31 +31,41 @@ class OutgoModel():
     amount = 0
     category = ""
 
-    def fetch(self):
+    @staticmethod
+    def all():
         con = sqlite3.connect(SQLITE_FILE)
         try:
-            curs = con.cursor()
-            curs.execute('''
+            cur = con.cursor()
+            cur.execute('''
                     select * from outgo
                     where outgo.status = '0'
                     order by number;
             ''')
-            return curs.fetchall()
+            outgoes = []
+            for row in cur:
+                outgo = OutgoModel()
+                outgo.number = row[0]
+                outgo.status = row[1]
+                outgo.buyer = row[2]
+                outgo.amount = row[3]
+                outgo.category = row[4]
+                outgoes.append(outgo)
+            return outgoes
         finally:
             con.close()
 
     def save(self):
         con = sqlite3.connect(SQLITE_FILE)
         try:
-            curs = con.cursor()
+            cur = con.cursor()
             if self.number is None:
-                curs.execute('''
+                cur.execute('''
                         insert into outgo
                             (status, buyer, amount, category)
                         values (?, ?, ?, ?)''',
                         (self.status, self.buyer, 0 if not self.amount else self.amount, self.category))
             else:
-                curs.execute('''
+                cur.execute('''
                         update outgo
                         set status = ?, buyer = ?, amount = ?, category = ?
                         where number = ?''',
@@ -96,6 +106,16 @@ class InputWidget(BoxLayout):
         self.number_display.text = self.number_display.text[:-1]
 
     def enter(self, carousel_widget, list_widget):
+        self.save_outgo()
+        self.clear()
+        list_widget.update_outgo_data()
+        carousel_widget.load_slide(list_widget)
+
+    def cancel(self, carousel_widget, list_widget):
+        self.clear()
+        carousel_widget.load_slide(list_widget)
+
+    def save_outgo(self):
         outgo = OutgoModel()
         outgo.number = self.number
         outgo.status = '0'
@@ -103,12 +123,10 @@ class InputWidget(BoxLayout):
         outgo.amount = self.number_display.text
         outgo.category = self.category_spinner.text
         outgo.save()
-        list_widget.update_outgo_data()
-        self.number = None
-        carousel_widget.load_slide(list_widget)
 
-    def cancel(self, outgoRoot):
-        outgoRoot.carousel.load_slide(outgoRoot.list_widget)
+    def clear(self):
+        self.number = None
+        self.enter_button.text = 'Enter'
 
 
 class ListWidget(BoxLayout):
@@ -159,9 +177,9 @@ class ListViewWidget(ListView):
 
     def build_adapter(self):
         return ListAdapter(
-                data=OutgoModel().fetch(),
-                args_converter=lambda index, data: \
-                        {'data': data},
+                data=OutgoModel.all(),
+                args_converter=lambda index, outgo: \
+                        {'outgo': outgo},
                 template='ListItemWidget',
                 selection_mode='multiple')
 
@@ -195,26 +213,26 @@ class ConfirmLabel(Label):
 
 
 class ListItemLabelWidget(ListItemButton):
-    def print_item(self, items):
-        return ' ' + items[2] + ' ' + str(items[3]) + ' ' + items[4]
+    def print_item(self, outgo):
+        return ' ' + outgo.buyer + ' ' + str(outgo.amount) + ' ' + outgo.category
 
 
 class ListItemBtnWidget(ListItemButton):
-    data = ObjectProperty()
+    outgo = ObjectProperty()
 
-    def edit(self, outgoRoot):
-        input_widget = outgoRoot.input_widget
-        input_widget.number = self.data[0]
-        input_widget.number_display.text = '' if self.data[3] == 0 else str(self.data[3])
-        category = self.data[4]
+    def edit(self, carousel_widget, input_widget):
+        input_widget.number = self.outgo.number
+        input_widget.number_display.text = '' if self.outgo.amount == 0 else str(self.outgo.amount)
+        category = self.outgo.category
         input_widget.category_spinner.text = category if category in CATEGORY_LIST else CATEGORY_LIST[0]
-        if self.data[2] == 'n':
+        if self.outgo.buyer == 'n':
             input_widget.target_n.state = 'down'
             input_widget.target_y.state = 'normal'
         else:
             input_widget.target_y.state = 'down'
             input_widget.target_n.state = 'normal'
-        outgoRoot.carousel.load_slide(input_widget)
+        input_widget.enter_button.text = 'Edit'
+        carousel_widget.load_slide(input_widget)
 
 
 class OutgoApp(App):
