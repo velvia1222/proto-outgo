@@ -21,7 +21,6 @@ OutgoRoot
         loop: True
         InputWidget:
             id: input_widget
-            model: app.outgo_model
         ListWidget:
             id: list_widget
 
@@ -141,7 +140,6 @@ OutgoRoot
 
     ListViewWidget:
         id: listview_widget
-        model: app.outgo_model
         adapter: self.build_adapter()
 
 [ListItemWidget@SelectableView+BoxLayout]:
@@ -157,18 +155,20 @@ OutgoRoot
         font_size: list_font_size
 
     ListItemBtnWidget:
+        data: ctx.data
         text: 'Edit'
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25
         font_size: list_font_size
-        on_press: self.move_to_input(app.root)
+        on_press: self.edit(app.root)
 
     ListItemBtnWidget:
+        data: ctx.data
         text: 'Del'
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25
         font_size: list_font_size
-        on_press: self.move_to_input(app.root)
+        on_press: self.move_to_input(app.root.input_widget)
 
 <ConfirmContent>:
     ConfirmLabel:

@@ -24,24 +24,43 @@ Window.size = (300, 450)
 
 
 class OutgoModel():
+
+    number = None
+    status = ""
+    buyer = ""
+    amount = 0
+    category = ""
+
     def fetch(self):
         con = sqlite3.connect(SQLITE_FILE)
         try:
             curs = con.cursor()
-            curs.execute('''select * from outgo order by number;''')
+            curs.execute('''
+                    select * from outgo
+                    where outgo.status = '0'
+                    order by number;
+            ''')
             return curs.fetchall()
         finally:
             con.close()
 
-    def save(self, status, buyer, amount, category):
+    def save(self):
         con = sqlite3.connect(SQLITE_FILE)
         try:
             curs = con.cursor()
-            curs.execute('''
-                    insert into outgo
-                        (status, buyer, amount, category) values
-                        (?, ?, ?, ?)''',
-                    (status, buyer, 0 if not amount else amount, category))
+            if self.number is None:
+                curs.execute('''
+                        insert into outgo
+                            (status, buyer, amount, category)
+                        values (?, ?, ?, ?)''',
+                        (self.status, self.buyer, 0 if not self.amount else self.amount, self.category))
+            else:
+                curs.execute('''
+                        update outgo
+                        set status = ?, buyer = ?, amount = ?, category = ?
+                        where number = ?''',
+                        (self.status, self.buyer, 0 if not self.amount else self.amount, self.category, self.number))
+
             con.commit()
         finally:
             con.close()
@@ -56,11 +75,10 @@ class CarouselWidget(Carousel):
 
 
 class InputWidget(BoxLayout):
-    model = ObjectProperty()
+    number = None
 
     def get_category(self):
-        if len(CATEGORY_LIST) > 0:
-            self.category_spinner.text = CATEGORY_LIST[0]
+        self.category_spinner.text = CATEGORY_LIST[0]
         return CATEGORY_LIST
 
     def select_y(self):
@@ -78,12 +96,15 @@ class InputWidget(BoxLayout):
         self.number_display.text = self.number_display.text[:-1]
 
     def enter(self, carousel_widget, list_widget):
-        self.model.save(
-                '0',
-                'n' if self.target_n.state == 'down' else 'y',
-                self.number_display.text,
-                self.category_spinner.text)
+        outgo = OutgoModel()
+        outgo.number = self.number
+        outgo.status = '0'
+        outgo.buyer = 'n' if self.target_n.state == 'down' else 'y'
+        outgo.amount = self.number_display.text
+        outgo.category = self.category_spinner.text
+        outgo.save()
         list_widget.update_outgo_data()
+        self.number = None
         carousel_widget.load_slide(list_widget)
 
     def cancel(self, outgoRoot):
@@ -132,14 +153,13 @@ class ListWidget(BoxLayout):
 
 
 class ListViewWidget(ListView):
-    model = ObjectProperty()
 
     def update_adapter(self):
         self.adapter = self.build_adapter()
 
     def build_adapter(self):
         return ListAdapter(
-                data=self.model.fetch(),
+                data=OutgoModel().fetch(),
                 args_converter=lambda index, data: \
                         {'data': data},
                 template='ListItemWidget',
@@ -180,14 +200,26 @@ class ListItemLabelWidget(ListItemButton):
 
 
 class ListItemBtnWidget(ListItemButton):
-    def move_to_input(self, outgoRoot):
-        outgoRoot.carousel.load_slide(outgoRoot.input_widget)
+    data = ObjectProperty()
+
+    def edit(self, outgoRoot):
+        input_widget = outgoRoot.input_widget
+        input_widget.number = self.data[0]
+        input_widget.number_display.text = '' if self.data[3] == 0 else str(self.data[3])
+        category = self.data[4]
+        input_widget.category_spinner.text = category if category in CATEGORY_LIST else CATEGORY_LIST[0]
+        if self.data[2] == 'n':
+            input_widget.target_n.state = 'down'
+            input_widget.target_y.state = 'normal'
+        else:
+            input_widget.target_y.state = 'down'
+            input_widget.target_n.state = 'normal'
+        outgoRoot.carousel.load_slide(input_widget)
 
 
 class OutgoApp(App):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.outgo_model = OutgoModel()
 
 
 if __name__ == '__main__':
