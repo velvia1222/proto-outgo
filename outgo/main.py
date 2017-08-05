@@ -75,6 +75,19 @@ class OutgoModel():
         finally:
             con.close()
 
+    def delete(self):
+        con = sqlite3.connect(SQLITE_FILE)
+        try:
+            cur = con.cursor()
+            cur.execute('''
+                    delete from outgo
+                        where number = ?''',
+                    (self.number,))
+
+            con.commit()
+        finally:
+            con.close()
+
 
 class OutgoRoot(Widget):
     pass
@@ -203,7 +216,10 @@ class ConfirmPopup(Popup):
 
 
 class PopupButton(Button):
-    pass
+    def delete(self, outgo, list_widget, popup):
+        outgo.delete()
+        list_widget.update_outgo_data()
+        popup.dismiss()
 
 
 class ConfirmContent(Widget):
@@ -216,7 +232,7 @@ class ConfirmLabel(Label):
 
 class ListItemLabelWidget(ListItemButton):
     def print_item(self, outgo):
-        return ' ' + outgo.buyer + ' ' + str(outgo.amount) + ' ' + outgo.category
+        return ' {} {} {}'.format(outgo.buyer, str(outgo.amount), outgo.category)
 
 
 class ListItemBtnWidget(ListItemButton):
@@ -236,15 +252,16 @@ class ListItemBtnWidget(ListItemButton):
         input_widget.enter_button.text = 'Edit'
         carousel_widget.load_slide(input_widget)
 
-    def delete(self):
+    def delete(self, list_widget):
         content = ConfirmContent()
         confirm_label = ConfirmLabel(text=self.make_delete_text())
         content.add_widget(confirm_label)
         popup = ConfirmPopup(title='Delete confirm', content=content)
+        outgo = self.outgo
         do_button = PopupButton(
                 text='Delete',
                 right=Window.width - 51,
-                on_press=popup.dismiss)
+                on_press=(lambda self: self.delete(outgo, list_widget, popup)))
         cancel_button = PopupButton(
                 text='Cancel',
                 right=Window.width / 2 - 41,
@@ -254,7 +271,7 @@ class ListItemBtnWidget(ListItemButton):
         popup.open()
 
     def make_delete_text(self):
-        return ' ' + self.outgo.buyer + ' ' + str(self.outgo.amount) + ' ' + self.outgo.category
+        return ' {} {} {}'.format(self.outgo.buyer, str(self.outgo.amount), self.outgo.category)
 
 
 class OutgoApp(App):
