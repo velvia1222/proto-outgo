@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import floor
 from kivy.adapters.listadapter import ListAdapter
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -167,15 +168,16 @@ class ListWidget(BoxLayout):
                 adapter.get_view(index).list_item_label.trigger_action()
                 index += 1
 
-    def pay_off(self):
+    def pay_off(self, list_widget):
+        selected_outgoes, confirm_text = self.calc_payment()
         content = ConfirmContent()
-        confirm_label = ConfirmLabel(text=self.make_confirm_text())
+        confirm_label = ConfirmLabel(text=confirm_text)
         content.add_widget(confirm_label)
         popup = ConfirmPopup(title='Pay off confirm', content=content)
         do_button = PopupButton(
                 text='Pay',
                 right=Window.width - 51,
-                on_press=popup.dismiss)
+                on_press=(lambda self: self.pay_off(selected_outgoes, list_widget, popup)))
         cancel_button = PopupButton(
                 text='Cancel',
                 right=Window.width / 2 - 41,
@@ -184,19 +186,40 @@ class ListWidget(BoxLayout):
         content.add_widget(cancel_button)
         popup.open()
 
-    def make_confirm_text(self):
+    def calc_payment(self):
         adapter = self.listview_widget.adapter
         views_len = len(adapter.data)
+        selected_outgoes = []
         selected_labels = []
+        selected_labels.append('')
+        selected_labels.append('')
+        y_amount = 0
+        n_amount = 0
 
         index = 0
         while index < views_len:
             label = adapter.get_view(index).list_item_label
             if label.is_selected:
+                outgo = label.outgo
+                if outgo.buyer == 'y':
+                    y_amount += outgo.amount
+                else:
+                    n_amount += outgo.amount
+                selected_outgoes.append(outgo)
                 selected_labels.append(label.text)
             index += 1
 
-        return "\n".join(selected_labels)
+        if n_amount < y_amount:
+            payer = 'n'
+            payment = floor((y_amount - n_amount) / 2)
+        else:
+            payer = 'y'
+            payment = floor((n_amount - y_amount) / 2)
+
+        selected_labels[0] = '{}が{}円支払ってください'.format(
+                payer, str(payment))
+
+        return selected_outgoes, '\n'.join(selected_labels)
 
 
 class ListViewWidget(ListView):
@@ -218,6 +241,13 @@ class ConfirmPopup(Popup):
 
 
 class PopupButton(Button):
+    def pay_off(self, selected_outgoes, list_widget, popup):
+        for outgo in selected_outgoes:
+            outgo.status = '1'
+            outgo.save()
+        list_widget.update_outgo_data()
+        popup.dismiss()
+
     def delete(self, outgo, list_widget, popup):
         outgo.delete()
         list_widget.update_outgo_data()
@@ -233,6 +263,8 @@ class ConfirmLabel(Label):
 
 
 class ListItemLabelWidget(ListItemButton):
+    outgo = ObjectProperty()
+
     def print_item(self, outgo):
         return ' {} {} {}'.format(outgo.buyer, str(outgo.amount), outgo.category)
 
