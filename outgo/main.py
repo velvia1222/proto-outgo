@@ -1,3 +1,4 @@
+from datetime import datetime
 from kivy.adapters.listadapter import ListAdapter
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -44,11 +45,11 @@ class OutgoModel():
             outgoes = []
             for row in cur:
                 outgo = OutgoModel()
-                outgo.number = row[0]
-                outgo.status = row[1]
-                outgo.buyer = row[2]
-                outgo.amount = row[3]
-                outgo.category = row[4]
+                outgo.number = row[1]
+                outgo.status = row[2]
+                outgo.buyer = row[3]
+                outgo.amount = row[4]
+                outgo.category = row[5]
                 outgoes.append(outgo)
             return outgoes
         finally:
@@ -65,11 +66,12 @@ class OutgoModel():
                         values (?, ?, ?, ?)''',
                         (self.status, self.buyer, 0 if not self.amount else self.amount, self.category))
             else:
+                updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 cur.execute('''
                         update outgo
-                        set status = ?, buyer = ?, amount = ?, category = ?
+                        set updated_at = ?, status = ?, buyer = ?, amount = ?, category = ?
                         where number = ?''',
-                        (self.status, self.buyer, 0 if not self.amount else self.amount, self.category, self.number))
+                        (updated_at, self.status, self.buyer, 0 if not self.amount else self.amount, self.category, self.number))
 
             con.commit()
         finally:
