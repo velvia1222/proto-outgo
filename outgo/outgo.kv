@@ -170,21 +170,20 @@ OutgoRoot
         selected_color: [0., 1., 0., 1]
         size_hint_x: 0.25
         font_size: list_font_size
-        on_press: self.move_to_input(app.root.input_widget)
+        on_press: self.delete()
 
 <ConfirmContent>:
-    ConfirmLabel:
-        top: root.height
-        right: root.right * 0.4
+    size_hint_x: 0.95
+    size_hint_y: 0.95
+
+<ConfirmLabel@Label>:
+    top: Window.height - 120
 
 <PopupButton@Button>:
     top: root.height / row_number + 55
     font_size: 24
     width: 140
     height: Window.height / row_number - 10
-
-<ConfirmLabel@Label>:
-    text: root.get_text(app.root.list_widget.listview_widget)
 
 <InputButton@Button>:
     font_size: btn_font_size

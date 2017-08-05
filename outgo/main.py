@@ -153,12 +153,12 @@ class ListWidget(BoxLayout):
                 index += 1
 
     def pay_off(self):
-        content = ConfirmContent(
-                size_hint_x=0.95,
-                size_hint_y=0.95)
-        popup = ConfirmPopup(content=content)
+        content = ConfirmContent()
+        confirm_label = ConfirmLabel(text=self.make_confirm_text())
+        content.add_widget(confirm_label)
+        popup = ConfirmPopup(title='Pay off confirm', content=content)
         do_button = PopupButton(
-                text='Do',
+                text='Pay',
                 right=Window.width - 51,
                 on_press=popup.dismiss)
         cancel_button = PopupButton(
@@ -168,6 +168,20 @@ class ListWidget(BoxLayout):
         content.add_widget(do_button)
         content.add_widget(cancel_button)
         popup.open()
+
+    def make_confirm_text(self):
+        adapter = self.listview_widget.adapter
+        views_len = len(adapter.data)
+        selected_labels = []
+
+        index = 0
+        while index < views_len:
+            label = adapter.get_view(index).list_item_label
+            if label.is_selected:
+                selected_labels.append(label.text)
+            index += 1
+
+        return "\n".join(selected_labels)
 
 
 class ListViewWidget(ListView):
@@ -197,19 +211,7 @@ class ConfirmContent(Widget):
 
 
 class ConfirmLabel(Label):
-    def get_text(self, listview_widget):
-        adapter = listview_widget.adapter
-        views_len = len(adapter.data)
-        selected_labels = []
-
-        index = 0
-        while index < views_len:
-            label = adapter.get_view(index).list_item_label
-            if label.is_selected:
-                selected_labels.append(label.text)
-            index += 1
-
-        return "\n".join(selected_labels)
+    pass
 
 
 class ListItemLabelWidget(ListItemButton):
@@ -233,6 +235,26 @@ class ListItemBtnWidget(ListItemButton):
             input_widget.target_n.state = 'normal'
         input_widget.enter_button.text = 'Edit'
         carousel_widget.load_slide(input_widget)
+
+    def delete(self):
+        content = ConfirmContent()
+        confirm_label = ConfirmLabel(text=self.make_delete_text())
+        content.add_widget(confirm_label)
+        popup = ConfirmPopup(title='Delete confirm', content=content)
+        do_button = PopupButton(
+                text='Delete',
+                right=Window.width - 51,
+                on_press=popup.dismiss)
+        cancel_button = PopupButton(
+                text='Cancel',
+                right=Window.width / 2 - 41,
+                on_press=popup.dismiss)
+        content.add_widget(do_button)
+        content.add_widget(cancel_button)
+        popup.open()
+
+    def make_delete_text(self):
+        return ' ' + self.outgo.buyer + ' ' + str(self.outgo.amount) + ' ' + self.outgo.category
 
 
 class OutgoApp(App):
