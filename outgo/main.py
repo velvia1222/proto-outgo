@@ -142,6 +142,10 @@ class InputWidget(BoxLayout):
 
     def clear(self):
         self.number = None
+        self.number_display.text = ''
+        self.target_n.state = 'down'
+        self.target_y.state = 'normal'
+        self.category_spinner.text = CATEGORY_LIST[0]
         self.enter_button.text = 'Enter'
 
 

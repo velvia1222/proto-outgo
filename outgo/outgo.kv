@@ -174,13 +174,14 @@ OutgoRoot
         on_press: self.delete(app.root.list_widget)
 
 <ConfirmContent>:
-    size_hint_x: 0.95
-    size_hint_y: 0.95
+    width: Window.width - 10
+    height: Window.height - 10
+    right: Window.width - 10
 
 <ConfirmLabel@Label>:
-    top: Window.height - 120
+    x: 10
+    top: Window.height - 100
     size: self.texture_size
-    size_hint_x: 0.95
 
 <PopupButton@Button>:
     top: root.height / row_number + 55
