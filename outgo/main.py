@@ -1,5 +1,4 @@
 from datetime import datetime
-from math import floor
 from kivy.adapters.listadapter import ListAdapter
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -13,7 +12,9 @@ from kivy.uix.carousel import Carousel
 from kivy.uix.label import Label
 from kivy.uix.listview import CompositeListItem, ListItemButton, ListView
 from kivy.uix.popup import Popup
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
+from math import floor
 import sqlite3
 
 # const
@@ -175,7 +176,8 @@ class ListWidget(BoxLayout):
     def pay_off(self, list_widget):
         selected_outgoes, confirm_text = self.calc_payment()
         content = ConfirmContent()
-        confirm_label = ConfirmLabel(text=confirm_text)
+        confirm_label = ConfirmLabel()
+        confirm_label.confirm_label.text = confirm_text
         content.add_widget(confirm_label)
         popup = ConfirmPopup(title='Pay off confirm', content=content)
         do_button = PopupButton(
@@ -262,7 +264,7 @@ class ConfirmContent(Widget):
     pass
 
 
-class ConfirmLabel(Label):
+class ConfirmLabel(ScrollView):
     pass
 
 
@@ -292,7 +294,8 @@ class ListItemBtnWidget(ListItemButton):
 
     def delete(self, list_widget):
         content = ConfirmContent()
-        confirm_label = ConfirmLabel(text=self.make_delete_text())
+        confirm_label = ConfirmLabel()
+        confirm_label.confirm_label.text = self.make_delete_text()
         content.add_widget(confirm_label)
         popup = ConfirmPopup(title='Delete confirm', content=content)
         outgo = self.outgo
