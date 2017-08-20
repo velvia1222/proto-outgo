@@ -17,7 +17,6 @@ from kivy.uix.widget import Widget
 from math import floor
 import sqlite3
 
-# const
 SQLITE_FILE = 'outgo_db.sqlite'
 CATEGORY_LIST = ['外食費', '食費', '日用品', '娯楽', '光熱費', '家賃']
 
@@ -44,15 +43,7 @@ class OutgoModel():
                     where outgo.status = '0'
                     order by number;
             ''')
-            outgoes = []
-            for row in cur:
-                outgo = OutgoModel()
-                outgo.number = row[1]
-                outgo.status = row[2]
-                outgo.buyer = row[3]
-                outgo.amount = row[4]
-                outgo.category = row[5]
-                outgoes.append(outgo)
+            outgoes = [OutgoModel._create_instance(row) for row in cur]
             return outgoes
         finally:
             con.close()
@@ -92,6 +83,16 @@ class OutgoModel():
         finally:
             con.close()
 
+    @staticmethod
+    def _create_instance(row):
+        outgo = OutgoModel()
+        outgo.number = row[1]
+        outgo.status = row[2]
+        outgo.buyer = row[3]
+        outgo.amount = row[4]
+        outgo.category = row[5]
+        return outgo
+
 
 class OutgoRoot(Widget):
     pass
@@ -103,10 +104,6 @@ class CarouselWidget(Carousel):
 
 class InputWidget(BoxLayout):
     number = None
-
-    def get_category(self):
-        self.category_spinner.text = CATEGORY_LIST[0]
-        return CATEGORY_LIST
 
     def select_y(self):
         if self.target_y.state == 'normal':
@@ -123,16 +120,16 @@ class InputWidget(BoxLayout):
         self.number_display.text = self.number_display.text[:-1]
 
     def enter(self, carousel_widget, list_widget):
-        self.save_outgo()
-        self.clear()
-        list_widget.update_outgo_data()
+        self._save()
+        self._clear()
+        list_widget.reload()
         carousel_widget.load_slide(list_widget)
 
     def cancel(self, carousel_widget, list_widget):
-        self.clear()
+        self._clear()
         carousel_widget.load_slide(list_widget)
 
-    def save_outgo(self):
+    def _save(self):
         outgo = OutgoModel()
         outgo.number = self.number
         outgo.status = '0'
@@ -141,7 +138,7 @@ class InputWidget(BoxLayout):
         outgo.category = self.category_spinner.text
         outgo.save()
 
-    def clear(self):
+    def _clear(self):
         self.number = None
         self.number_display.text = ''
         self.target_n.state = 'down'
@@ -151,8 +148,8 @@ class InputWidget(BoxLayout):
 
 
 class ListWidget(BoxLayout):
-    def update_outgo_data(self):
-        self.listview_widget.update_adapter()
+    def reload(self):
+        self.listview_widget.reload_adapter()
 
     def select_all(self):
         adapter = self.listview_widget.adapter
@@ -174,13 +171,13 @@ class ListWidget(BoxLayout):
                 index += 1
 
     def pay_off(self, list_widget):
-        selected_outgoes, confirm_text = self.calc_payment()
+        selected_outgoes, confirm_text = self._calc_payment()
         content = ConfirmContent()
-        confirm_label = ConfirmLabel()
-        confirm_label.confirm_label.text = confirm_text
-        content.add_widget(confirm_label)
+        confirm_view = ConfirmView()
+        confirm_view.confirm_label.text = confirm_text
+        content.add_widget(confirm_view)
         popup = ConfirmPopup(title='Pay off confirm', content=content)
-        do_button = PopupButton(
+        payoff_button = PopupPayOffButton(
                 text='Pay',
                 right=Window.width - 51,
                 on_press=(lambda self: self.pay_off(selected_outgoes, list_widget, popup)))
@@ -188,11 +185,11 @@ class ListWidget(BoxLayout):
                 text='Cancel',
                 right=Window.width / 2 - 41,
                 on_press=popup.dismiss)
-        content.add_widget(do_button)
+        content.add_widget(payoff_button)
         content.add_widget(cancel_button)
         popup.open()
 
-    def calc_payment(self):
+    def _calc_payment(self):
         adapter = self.listview_widget.adapter
         views_len = len(adapter.data)
         selected_outgoes = []
@@ -230,7 +227,7 @@ class ListWidget(BoxLayout):
 
 class ListViewWidget(ListView):
 
-    def update_adapter(self):
+    def reload_adapter(self):
         self.adapter = self.build_adapter()
 
     def build_adapter(self):
@@ -247,16 +244,22 @@ class ConfirmPopup(Popup):
 
 
 class PopupButton(Button):
+    pass
+
+
+class PopupPayOffButton(PopupButton):
     def pay_off(self, selected_outgoes, list_widget, popup):
         for outgo in selected_outgoes:
             outgo.status = '1'
             outgo.save()
-        list_widget.update_outgo_data()
+        list_widget.reload()
         popup.dismiss()
 
+
+class PopupDeleteButton(PopupButton):
     def delete(self, outgo, list_widget, popup):
         outgo.delete()
-        list_widget.update_outgo_data()
+        list_widget.reload()
         popup.dismiss()
 
 
@@ -264,7 +267,7 @@ class ConfirmContent(Widget):
     pass
 
 
-class ConfirmLabel(ScrollView):
+class ConfirmView(ScrollView):
     pass
 
 
@@ -278,6 +281,8 @@ class ListItemLabelWidget(ListItemButton):
 class ListItemBtnWidget(ListItemButton):
     outgo = ObjectProperty()
 
+
+class ListItemEditBtnWidget(ListItemBtnWidget):
     def edit(self, carousel_widget, input_widget):
         input_widget.number = self.outgo.number
         input_widget.number_display.text = '' if self.outgo.amount == 0 else str(self.outgo.amount)
@@ -292,14 +297,16 @@ class ListItemBtnWidget(ListItemButton):
         input_widget.enter_button.text = 'Edit'
         carousel_widget.load_slide(input_widget)
 
+
+class ListItemDeleteBtnWidget(ListItemBtnWidget):
     def delete(self, list_widget):
         content = ConfirmContent()
-        confirm_label = ConfirmLabel()
-        confirm_label.confirm_label.text = self.make_delete_text()
-        content.add_widget(confirm_label)
+        confirm_view = ConfirmView()
+        confirm_view.confirm_label.text = self._make_confirm_text()
+        content.add_widget(confirm_view)
         popup = ConfirmPopup(title='Delete confirm', content=content)
         outgo = self.outgo
-        do_button = PopupButton(
+        delete_button = PopupDeleteButton(
                 text='Delete',
                 right=Window.width - 51,
                 on_press=(lambda self: self.delete(outgo, list_widget, popup)))
@@ -307,11 +314,11 @@ class ListItemBtnWidget(ListItemButton):
                 text='Cancel',
                 right=Window.width / 2 - 41,
                 on_press=popup.dismiss)
-        content.add_widget(do_button)
+        content.add_widget(delete_button)
         content.add_widget(cancel_button)
         popup.open()
 
-    def make_delete_text(self):
+    def _make_confirm_text(self):
         return ' {} {} {}'.format(self.outgo.buyer, str(self.outgo.amount), self.outgo.category)
 
 

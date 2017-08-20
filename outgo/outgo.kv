@@ -1,6 +1,7 @@
 #:kivy 1.8.0
 
 #:import Window kivy.core.window.Window
+#:import CATEGORY_LIST main.CATEGORY_LIST
 
 #:set col_number 3
 #:set row_number 7
@@ -55,7 +56,8 @@ OutgoRoot
             size_hint_x: 2 / 3
             font_size: btn_font_size
             text_autoupdate: True
-            values: root.get_category()
+            text: CATEGORY_LIST[0]
+            values: CATEGORY_LIST
 
     BoxLayout:
         orientation: "horizontal"
@@ -162,28 +164,31 @@ OutgoRoot
         valign: 'middle'
         font_size: list_font_size
 
-    ListItemBtnWidget:
+    ListItemEditBtnWidget:
         outgo: ctx.outgo
-        text: 'Edit'
-        selected_color: [0., 1., 0., 1]
-        size_hint_x: 0.25
-        font_size: list_font_size
-        on_press: self.edit(app.root.carousel, app.root.input_widget)
 
-    ListItemBtnWidget:
+    ListItemDeleteBtnWidget:
         outgo: ctx.outgo
-        text: 'Del'
-        selected_color: [0., 1., 0., 1]
-        size_hint_x: 0.25
-        font_size: list_font_size
-        on_press: self.delete(app.root.list_widget)
+
+<ListItemBtnWidget>:
+    selected_color: [0., 1., 0., 1]
+    size_hint_x: 0.25
+    font_size: list_font_size
+
+<ListItemEditBtnWidget@ListItemBtnWidget>:
+    text: 'Edit'
+    on_press: self.edit(app.root.carousel, app.root.input_widget)
+
+<ListItemDeleteBtnWidget@ListItemBtnWidget>:
+    text: 'Del'
+    on_press: self.delete(app.root.list_widget)
 
 <ConfirmContent>:
     width: Window.width - 10
     height: Window.height - 10
     right: Window.width - 10
 
-<ConfirmLabel>:
+<ConfirmView>:
     confirm_label: confirm_label
     x: 10
     y: 90
