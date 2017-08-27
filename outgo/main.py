@@ -18,7 +18,7 @@ from math import floor
 import sqlite3
 
 SQLITE_FILE = 'outgo_db.sqlite'
-CATEGORY_LIST = ['外食費', '食費', '日用品', '娯楽', '光熱費', '家賃']
+CATEGORY_LIST = ['食費', '日用品', '外食費', '娯楽', '光熱費', '家賃']
 
 resource_add_path('/usr/share/fonts/truetype')
 LabelBase.register(DEFAULT_FONT, 'fonts-japanese-gothic.ttf')
