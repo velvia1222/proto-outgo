@@ -41,7 +41,7 @@ class OutgoModel():
             cur.execute('''
                     select * from outgo
                     where outgo.status = '0'
-                    order by number;
+                    order by number desc;
             ''')
             outgoes = [OutgoModel._create_instance(row) for row in cur]
             return outgoes
