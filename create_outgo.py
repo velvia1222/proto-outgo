@@ -1,6 +1,6 @@
 import sqlite3
 
-con = sqlite3.connect('./outgo_db.sqlite')
+con = sqlite3.connect('/var/local/outgo/sqlite/outgo.sqlite')
 cursor = con.cursor()
 cursor.execute('''drop table if exists outgo;''')
 cursor.execute('''
