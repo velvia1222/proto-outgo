@@ -1,15 +1,15 @@
 # proto-outgo
 二人の債務を記録し、任意のタイミングで精算するアプリ。<br>
 現状raspberry pi上でスタンドアロンで稼働しているが、いずれWEBでも使えるようにしたい。
-- マシン：Raspberry pi3
+- プラットフォーム：raspberry pi3
 - 言語：python3
-- GUIライブラリ：Kivy
+- GUIライブラリ：kivy
 - DB：sqlite
 
 ## インストール
-### Raspbianのインストールと基本設定
+### raspbianのインストールと基本設定
 ```
-# Raspbianイメージ書き込み
+# raspbianイメージ書き込み
 sudo dd bs=1M if=~/Desktop/2016-02-26-raspbian-jessie-lite.img of=/dev/sdb
 
 # プライベートIP固定化
@@ -55,7 +55,7 @@ vim /etc/hosts
 sudo ./LCD35-show 270
 ```
 
-### Cython、Kivyに必要なライブラリをインストール
+### cython、kivyに必要なライブラリをインストール
 ```
 sudo apt install build-essential curl libavformat-dev libbz2-dev libncurses5-dev libncursesw5-dev libportmidi-dev libreadline-dev libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev libsqlite3-dev libssh-dev libssl-dev libswscale-dev llvm make wget xz-utils zlib1g-dev libgl1-mesa-dev libgles2-mesa-dev fonts-ipafont
 ```
