@@ -193,9 +193,6 @@ class ListWidget(BoxLayout):
         adapter = self.listview_widget.adapter
         views_len = len(adapter.data)
         selected_outgoes = []
-        selected_labels = []
-        selected_labels.append('')
-        selected_labels.append('')
         y_amount = 0
         n_amount = 0
 
@@ -209,7 +206,6 @@ class ListWidget(BoxLayout):
                 else:
                     n_amount += outgo.amount
                 selected_outgoes.append(outgo)
-                selected_labels.append(label.text)
             index += 1
 
         if n_amount < y_amount:
@@ -219,10 +215,7 @@ class ListWidget(BoxLayout):
             payer = 'y'
             payment = floor((n_amount - y_amount) / 2)
 
-        selected_labels[0] = '{}が{}円支払ってください'.format(
-                payer, str(payment))
-
-        return selected_outgoes, '\n'.join(selected_labels)
+        return selected_outgoes, '{}が{}円支払ってください'.format(payer, str(payment))
 
 
 class ListViewWidget(ListView):
