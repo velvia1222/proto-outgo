@@ -89,3 +89,19 @@ pip3 install -r ~/projects/proto-outgo/requirements.txt
 ```
 ~/projects/proto-outgo/start.sh
 ```
+
+## Screenshots
+- 支払い入力画面
+<img src="https://user-images.githubusercontent.com/20614266/36626613-1cbca10e-1979-11e8-9240-a142d7e79aca.png">
+
+- 金額、払った人、カテゴリを入力してEnter押下
+<img src="https://user-images.githubusercontent.com/20614266/36626657-250c1834-197a-11e8-86ff-2df69b170dc8.png">
+
+- 一覧画面に追加される
+<img src="https://user-images.githubusercontent.com/20614266/36626672-4f7d5740-197a-11e8-90f9-14e7027cffe0.png">
+
+- 清算したい明細を選択してPay offボタン押下
+<img src="https://user-images.githubusercontent.com/20614266/36626678-5a44c500-197a-11e8-946a-9711e58758c0.png">
+
+- 表示された金額を支払ってPayボタン押下
+<img src="https://user-images.githubusercontent.com/20614266/36626681-652abb8c-197a-11e8-838f-8f71520278cd.png">
